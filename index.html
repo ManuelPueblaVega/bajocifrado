@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ArmoníaCifrada</title>
+  <!-- Incluir Tone.js desde CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.39/Tone.min.js"></script>
+  <style>
+    /* Estilos básicos */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f2f2f2;
+    }
+    header {
+      background: #333;
+      color: #fff;
+      padding: 15px;
+      text-align: center;
+    }
+    .container {
+      max-width: 800px;
+      margin: 30px auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .btn {
+      background: #007bff;
+      border: none;
+      padding: 10px 20px;
+      color: #fff;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .btn:hover {
+      background: #0056b3;
+    }
+    input[type="text"] {
+      padding: 8px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      margin-right: 10px;
+    }
+    .feedback {
+      margin-top: 15px;
+      padding: 10px;
+      border-radius: 4px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>ArmoníaCifrada</h1>
+  </header>
+  
+  <div class="container">
+    <h2>Aprende armonía sobre bajo cifrado</h2>
+    <p>Manuel, escucha el acorde generado y prueba a identificarlo. Luego, escribe tu respuesta en el campo de texto y presiona "Evaluar".</p>
+    
+    <!-- Botón para reproducir el acorde -->
+    <button id="playChord" class="btn">Reproducir Acorde</button>
+    
+    <br><br>
+    
+    <!-- Entrada para que el usuario ingrese el acorde -->
+    <label for="userChord">Ingresa el acorde (ej. C E G):</label>
+    <input type="text" id="userChord" placeholder="C E G">
+    <button id="evaluate" class="btn">Evaluar</button>
+    
+    <!-- Espacio para mostrar retroalimentación -->
+    <div id="feedback" class="feedback"></div>
+  </div>
+  
+  <script>
+    // Configuración del sintetizador con Tone.js
+    const synth = new Tone.PolySynth(Tone.Synth).toDestination();
+
+    // Acorde correcto para el ejercicio (puedes modificarlo según necesites)
+    const acordeCorrecto = ['C4', 'E4', 'G4'];
+
+    // Función para reproducir un acorde
+    function reproducirAcorde(acorde) {
+      synth.triggerAttackRelease(acorde, '2n');
+    }
+
+    // Manejador de eventos para el botón "Reproducir Acorde"
+    document.getElementById('playChord').addEventListener('click', async () => {
+      // Inicia el contexto de audio (requerido en algunos navegadores)
+      await Tone.start();
+      reproducirAcorde(acordeCorrecto);
+    });
+
+    // Manejador de eventos para evaluar la respuesta del usuario
+    document.getElementById('evaluate').addEventListener('click', () => {
+      const input = document.getElementById('userChord').value;
+      // Separa la entrada por espacios y transforma a mayúsculas
+      const userAcorde = input.trim().split(/\s+/).map(nota => nota.toUpperCase());
+      const correctAcorde = acordeCorrecto.map(nota => nota.toUpperCase());
+
+      // Verifica que ambos arreglos tengan la misma longitud y los mismos elementos
+      let isCorrect = (userAcorde.length === correctAcorde.length) &&
+                      userAcorde.every(nota => correctAcorde.includes(nota));
+
+      const feedbackDiv = document.getElementById('feedback');
+      
+      if (isCorrect) {
+        feedbackDiv.style.display = 'block';
+        feedbackDiv.style.background = '#dff0d8';
+        feedbackDiv.style.border = '1px solid #d6e9c6';
+        feedbackDiv.style.color = '#3c763d';
+        feedbackDiv.textContent = '¡Correcto, Manuel! Ese es el acorde adecuado.';
+      } else {
+        feedbackDiv.style.display = 'block';
+        feedbackDiv.style.background = '#f2dede';
+        feedbackDiv.style.border = '1px solid #ebccd1';
+        feedbackDiv.style.color = '#a94442';
+        feedbackDiv.textContent = 'Incorrecto, Manuel. Intenta de nuevo.';
+      }
+    });
+  </script>
+</body>
+</html>
